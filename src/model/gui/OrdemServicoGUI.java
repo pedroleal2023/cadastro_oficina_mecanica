@@ -116,7 +116,7 @@ public class OrdemServicoGUI extends JFrame {
                     descricaoArea.getText(),
                     statusField.getText()
             );
-            osDAO.adicionarOrdemDeServico(os);
+            osDAO.adicionarOrdemServico(os);
             listModel.addElement(os);
             limparCampos();
         }
@@ -130,7 +130,7 @@ public class OrdemServicoGUI extends JFrame {
                 os.setClienteId(cliente.getId());
                 os.setDescricao(descricaoArea.getText());
                 os.setStatus(statusField.getText());
-                osDAO.atualizarOrdemDeServico(os);
+                osDAO.atualizarOrdemServico(os);
                 osList.repaint();
                 limparCampos();
             }
@@ -140,21 +140,21 @@ public class OrdemServicoGUI extends JFrame {
     private void deletarOrdemDeServico() {
         OrdemServico os = osList.getSelectedValue();
         if (os != null) {
-            osDAO.deletarOrdemDeServico(os.getId());
+            osDAO.deletarOrdemServico(os.getId());
             listModel.removeElement(os);
             limparCampos();
         }
     }
 
     private void carregarClientes() {
-        List<Cliente> clientes = clienteDAO.listarClientes();
+        List<Cliente> clientes = clienteDAO.listarCliente();
         for (Cliente cliente : clientes) {
             clienteComboBox.addItem(cliente);
         }
     }
 
     private void listarOrdensDeServico() {
-        List<OrdemServico> ordensDeServico = osDAO.listarOrdensDeServico();
+        List<OrdemServico> ordensDeServico = osDAO.listarOrdemServico();
         for (OrdemServico os : ordensDeServico) {
             listModel.addElement(os);
         }

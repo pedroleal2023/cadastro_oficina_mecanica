@@ -93,7 +93,7 @@ public class FaturamentoGUI extends JFrame {
 	}
 
 	private void listarOrdensDeServicoConcluidas() {
-		List<OrdemServico> ordensConcluidas = osDAO.listarOrdensDeServicoConcluidas();
+		List<OrdemServico> ordensConcluidas = osDAO.listarOrdemServicoConcluidas();
 		listModel.clear();
 		for (OrdemServico os : ordensConcluidas) {
 			listModel.addElement(os);

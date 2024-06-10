@@ -17,7 +17,7 @@ public class ClienteDAO {
     public void adicionarCliente(Cliente cliente) {
         try {
             if (!existeCliente(cliente.getNome(), cliente.getTelefone(), cliente.getEmail())) {
-                String sql = "INSERT INTO clientes (nome, endereco, telefone, email) VALUES (?, ?, ?, ?)";
+                String sql = "INSERT INTO cliente (nome, endereco, telefone, email) VALUES (?, ?, ?, ?)";
                 PreparedStatement stmt = connection.prepareStatement(sql);
                 stmt.setString(1, cliente.getNome());
                 stmt.setString(2, cliente.getEndereco());
@@ -35,7 +35,7 @@ public class ClienteDAO {
 
     public void atualizarCliente(Cliente cliente) {
         try {
-            String sql = "UPDATE clientes SET nome=?, endereco=?, telefone=?, email=? WHERE id=?";
+            String sql = "UPDATE cliente SET nome=?, endereco=?, telefone=?, email=? WHERE id=?";
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, cliente.getNome());
             stmt.setString(2, cliente.getEndereco());
@@ -51,7 +51,7 @@ public class ClienteDAO {
 
     public void deletarCliente(int id) {
         try {
-            String sql = "DELETE FROM clientes WHERE id=?";
+            String sql = "DELETE FROM cliente WHERE id=?";
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setInt(1, id);
             stmt.executeUpdate();
@@ -61,10 +61,10 @@ public class ClienteDAO {
         }
     }
 
-    public List<Cliente> listarClientes() {
+    public List<Cliente> listarCliente() {
         List<Cliente> clientes = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM clientes";
+            String sql = "SELECT * FROM cliente";
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
@@ -85,7 +85,7 @@ public class ClienteDAO {
     }
     
     public boolean existeCliente(String nome, String telefone, String email) {
-        String sql = "SELECT * FROM clientes WHERE nome = ? OR telefone = ? OR email = ?";
+        String sql = "SELECT * FROM cliente WHERE nome = ? OR telefone = ? OR email = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, nome);
             stmt.setString(2, telefone);

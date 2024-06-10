@@ -72,11 +72,11 @@ public class PedidoCompraGUI extends JFrame {
     private void adicionarPedidoDeCompra() {
         try {
             String dataStr = dataPedidoField.getText();
-            Date dataPedido = new SimpleDateFormat("dd/mm/yyyy").parse(dataStr);
+            Date dataPedido = new SimpleDateFormat("dd/MM/yyyy").parse(dataStr);
             String status = statusField.getText();
 
             PedidoCompra pedido = new PedidoCompra(dataPedido, status);
-            pedidoDeCompraDAO.adicionarPedidoDeCompra(pedido);
+            pedidoDeCompraDAO.adicionarPedidoCompra(pedido);
             listarPedidosDeCompra();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro ao adicionar pedido de compra: " + e.getMessage());
@@ -84,7 +84,7 @@ public class PedidoCompraGUI extends JFrame {
     }
 
     private void listarPedidosDeCompra() {
-        List<PedidoCompra> pedidosDeCompra = pedidoDeCompraDAO.listarPedidosDeCompra();
+        List<PedidoCompra> pedidosDeCompra = pedidoDeCompraDAO.listarPedidoCompra();
         tableModel.setRowCount(0);
 
         for (PedidoCompra pedido : pedidosDeCompra) {

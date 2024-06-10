@@ -124,7 +124,7 @@ public class ClienteGUI extends JFrame {
     }
 
     private void listarClientes() {
-        List<Cliente> clientes = clienteDAO.listarClientes();
+        List<Cliente> clientes = clienteDAO.listarCliente();
         listModel.clear();
         for (Cliente cliente : clientes) {
             listModel.addElement(cliente);

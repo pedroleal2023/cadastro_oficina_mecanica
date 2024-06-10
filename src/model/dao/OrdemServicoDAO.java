@@ -15,9 +15,9 @@ public class OrdemServicoDAO {
         conexao = DataBaseConnection.getConnection();
     }
 
-    public void adicionarOrdemDeServico(OrdemServico os) {
+    public void adicionarOrdemServico(OrdemServico os) {
         try {
-            String sql = "INSERT INTO ordens_de_servico (cliente_id, descricao, status) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO ordem_servico (cliente_id, descricao, status) VALUES (?, ?, ?)";
             PreparedStatement pstmt = conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             pstmt.setInt(1, os.getClienteId());
             pstmt.setString(2, os.getDescricao());
@@ -34,9 +34,9 @@ public class OrdemServicoDAO {
         }
     }
 
-    public void atualizarOrdemDeServico(OrdemServico os) {
+    public void atualizarOrdemServico(OrdemServico os) {
         try {
-            String sql = "UPDATE ordens_de_servico SET cliente_id = ?, descricao = ?, status = ? WHERE id = ?";
+            String sql = "UPDATE ordem_servico SET cliente_id = ?, descricao = ?, status = ? WHERE id = ?";
             PreparedStatement pstmt = conexao.prepareStatement(sql);
             pstmt.setInt(1, os.getClienteId());
             pstmt.setString(2, os.getDescricao());
@@ -50,7 +50,7 @@ public class OrdemServicoDAO {
 
     public void registrarFaturamento(OrdemServico os) {
         try {
-            String sql = "UPDATE ordens_de_servico SET valor_servico = ?, valor_pecas = ? WHERE id = ?";
+            String sql = "UPDATE ordem_servico SET valor_servico = ?, valor_pecas = ? WHERE id = ?";
             PreparedStatement pstmt = conexao.prepareStatement(sql);
             pstmt.setDouble(1, os.getValorServico());
             pstmt.setDouble(2, os.getValorPecas());
@@ -61,9 +61,9 @@ public class OrdemServicoDAO {
         }
     }
 
-    public void deletarOrdemDeServico(int id) {
+    public void deletarOrdemServico(int id) {
         try {
-            String sql = "DELETE FROM ordens_de_servico WHERE id = ?";
+            String sql = "DELETE FROM ordem_servico WHERE id = ?";
             PreparedStatement pstmt = conexao.prepareStatement(sql);
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
@@ -72,10 +72,10 @@ public class OrdemServicoDAO {
         }
     }
 
-    public List<OrdemServico> listarOrdensDeServico() {
-        List<OrdemServico> ordensDeServico = new ArrayList<>();
+    public List<OrdemServico> listarOrdemServico() {
+        List<OrdemServico> ordemServico = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM ordens_de_servico";
+            String sql = "SELECT * FROM ordem_servico";
             Statement stmt = conexao.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
 
@@ -88,18 +88,18 @@ public class OrdemServicoDAO {
                         rs.getDouble("valor_servico"),
                         rs.getDouble("valor_pecas")
                 );
-                ordensDeServico.add(os);
+                ordemServico.add(os);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return ordensDeServico;
+        return ordemServico;
     }
 
-    public List<OrdemServico> listarOrdensDeServicoConcluidas() {
-        List<OrdemServico> ordensDeServico = new ArrayList<>();
+    public List<OrdemServico> listarOrdemServicoConcluidas() {
+        List<OrdemServico> ordemServico = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM ordens_de_servico WHERE status = 'CONCLUIDA'";
+            String sql = "SELECT * FROM ordem_servico WHERE status = 'CONCLUIDA'";
             Statement stmt = conexao.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
 
@@ -112,15 +112,14 @@ public class OrdemServicoDAO {
                         rs.getDouble("valor_servico"),
                         rs.getDouble("valor_pecas")
                 );
-                ordensDeServico.add(os);
+                ordemServico.add(os);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return ordensDeServico;
+        return ordemServico;
     }
 
-    // Outros métodos para atualizar e deletar ordens de serviço, se necessário...
 }
 
 
