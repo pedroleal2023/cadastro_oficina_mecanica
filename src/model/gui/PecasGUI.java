@@ -1,13 +1,10 @@
-
 package model.gui;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
@@ -39,13 +36,14 @@ public class PecasGUI extends JFrame {
 
 	public PecasGUI() {
 		pecaDAO = new PecaDAO();
-		setTitle("Gerenciamento de Peças");
+		setTitle("Gerenciamento de Peças e Estoque");
 		setSize(600, 400);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
 
 		JPanel mainPanel = new JPanel(new BorderLayout());
 
+		// Painel para o formulário de peças
 		JPanel formPanel = new JPanel(new GridBagLayout());
 		formPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
@@ -94,44 +92,29 @@ public class PecasGUI extends JFrame {
 		gbc.gridwidth = 2;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		JButton adicionarButton = new JButton("Adicionar");
-		adicionarButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				adicionarPeca();
-			}
-		});
+		adicionarButton.addActionListener(e -> adicionarPeca());
 		formPanel.add(adicionarButton, gbc);
 
-		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		JButton atualizarButton = new JButton("Atualizar");
-		JButton deletarButton = new JButton("Deletar");
-
-		atualizarButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				atualizarPeca();
-			}
-		});
-
-		deletarButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				deletarPeca();
-			}
-		});
-
-		buttonPanel.add(atualizarButton);
-		buttonPanel.add(deletarButton);
-
 		mainPanel.add(formPanel, BorderLayout.NORTH);
-		mainPanel.add(buttonPanel, BorderLayout.CENTER);
+
+		// Painel para a lista de peças e estoque
+		JPanel listaPanel = new JPanel(new BorderLayout());
+
+		// Botão sem função para o título destacado
+		JButton tituloButton = new JButton("Lista de Peças no Estoque:");
+		tituloButton.setEnabled(false); // Desabilita o botão para não ser clicável
+		tituloButton.setFont(new Font("Arial", Font.BOLD, 18)); // Define a fonte e tamanho do texto
+
+		listaPanel.add(tituloButton, BorderLayout.NORTH);
 
 		listModel = new DefaultListModel<>();
 		pecaList = new JList<>(listModel);
 		pecaList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		pecaList.addListSelectionListener(e -> selecionarPeca());
 
-		mainPanel.add(new JScrollPane(pecaList), BorderLayout.SOUTH);
+		listaPanel.add(new JScrollPane(pecaList), BorderLayout.CENTER);
+
+		mainPanel.add(listaPanel, BorderLayout.CENTER);
 
 		add(mainPanel);
 
@@ -141,10 +124,10 @@ public class PecasGUI extends JFrame {
 	private void adicionarPeca() {
 		try {
 			int quantidade = Integer.parseInt(quantidadeField.getText());
-			Pecas peca = new Pecas(0, // Seu construtor espera um ID, defina como 0 ou deixe para o DAO atribuir
+			Pecas peca = new Pecas(0, // Defina como 0 ou deixe para o DAO atribuir
 					codigoField.getText(), nomeField.getText(), descricaoField.getText(), quantidade);
 			pecaDAO.adicionarPeca(peca);
-			listModel.addElement(peca); // Adiciona a peça à lista na GUI
+			listModel.addElement(peca);
 			limparCampos();
 		} catch (NumberFormatException ex) {
 			JOptionPane.showMessageDialog(this, "Por favor, insira uma quantidade válida.", "Erro",
@@ -152,36 +135,7 @@ public class PecasGUI extends JFrame {
 		}
 	}
 
-	private void atualizarPeca() {
-		Pecas peca = pecaList.getSelectedValue();
-		if (peca != null) {
-			peca.setCodigo(codigoField.getText());
-			peca.setNome(nomeField.getText());
-			peca.setDescricao(descricaoField.getText());
-			try {
-				int quantidade = Integer.parseInt(quantidadeField.getText());
-				peca.setQuantidade(quantidade);
-			} catch (NumberFormatException ex) {
-				JOptionPane.showMessageDialog(this, "Por favor, insira uma quantidade válida.", "Erro",
-						JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-			pecaDAO.atualizarPeca(peca);
-			pecaList.repaint();
-			limparCampos();
-		}
-	}
-
-	private void deletarPeca() {
-		Pecas peca = pecaList.getSelectedValue();
-		if (peca != null) {
-			pecaDAO.deletarPeca(peca.getId());
-			listModel.removeElement(peca);
-			limparCampos();
-		}
-	}
-
-	private void listarPecas() {
+	void listarPecas() {
 		List<Pecas> pecas = pecaDAO.listarPecas();
 		listModel.clear();
 		for (Pecas peca : pecas) {
@@ -208,8 +162,7 @@ public class PecasGUI extends JFrame {
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
-			PecasGUI pecaGUI = new PecasGUI();
-			pecaGUI.setVisible(true);
+			new PecasGUI().setVisible(true);
 		});
 	}
 }

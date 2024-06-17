@@ -1,6 +1,7 @@
 package model.dao;
 
 import model.entities.Estoque;
+import model.entities.Pecas;
 import DataBaseConnection.DataBaseConnection;
 
 import java.sql.*;
@@ -15,82 +16,100 @@ public class EstoqueDAO {
     }
 
     public void adicionarEstoque(Estoque estoque) {
-        try {
-            String sql = "INSERT INTO estoque (codigo, nome, descricao, quantidade) VALUES (?, ?, ?, ?)";
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, estoque.getCodigo());
-            stmt.setString(2, estoque.getNome());
-            stmt.setString(3, estoque.getDescricao());
-            stmt.setInt(4, estoque.getQuantidade());
+        String sql = "INSERT INTO estoque (nome, descricao) VALUES (?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, estoque.getNome());
+            stmt.setString(2, estoque.getDescricao());
             stmt.executeUpdate();
-            stmt.close();
+
+            ResultSet generatedKeys = stmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                estoque.setId(generatedKeys.getInt(1));
+            } else {
+                throw new SQLException("Falha ao obter o ID gerado para o estoque.");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public void atualizarEstoque(Estoque estoque) {
-        try {
-            String sql = "UPDATE estoque SET codigo=?, nome=?, descricao=?, quantidade=? WHERE id=?";
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, estoque.getCodigo());
-            stmt.setString(2, estoque.getNome());
-            stmt.setString(3, estoque.getDescricao());
-            stmt.setInt(4, estoque.getQuantidade());
-            stmt.setInt(5, estoque.getId());
+        String sql = "UPDATE estoque SET nome = ?, descricao = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, estoque.getNome());
+            stmt.setString(2, estoque.getDescricao());
+            stmt.setInt(3, estoque.getId());
             stmt.executeUpdate();
-            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public void deletarEstoque(int id) {
-        try {
-            String sql = "DELETE FROM estoque WHERE id=?";
-            PreparedStatement stmt = connection.prepareStatement(sql);
+        String sql = "DELETE FROM estoque WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
-            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public List<Estoque> listarEstoque() {
-        List<Estoque> estoques = new ArrayList<>();
-        try {
-            String sql = "SELECT * FROM estoque";
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                Estoque estoque = new Estoque(
-                    rs.getInt("id"),
-                    rs.getInt("codigo"),
-                    rs.getInt("quantidade"),
-                    rs.getString("nome"),
-                    rs.getString("descricao")
-                );
-                estoques.add(estoque); // Adicionando o objeto Estoque à lista
+    public Estoque buscarEstoquePorId(int id) {
+        Estoque estoque = null;
+        String sql = "SELECT * FROM estoque WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    estoque = new Estoque(rs.getInt("id"), rs.getString("nome"), rs.getString("descricao"));
+                    carregarPecas(estoque);
+                }
             }
-            rs.close();
-            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return estoque;
+    }
+
+    public List<Estoque> listarEstoques() {
+        List<Estoque> estoques = new ArrayList<>();
+        String sql = "SELECT * FROM estoque";
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                Estoque estoque = new Estoque(rs.getInt("id"), rs.getString("nome"), rs.getString("descricao"));
+                carregarPecas(estoque);
+                estoques.add(estoque);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return estoques;
     }
 
-    public boolean existeEstoque(String codigo) {
-        String sql = "SELECT * FROM estoque WHERE codigo = ?";
+    private void carregarPecas(Estoque estoque) {
+        String sql = "SELECT * FROM pecas WHERE estoque_id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, codigo);
+            stmt.setInt(1, estoque.getId());
             try (ResultSet rs = stmt.executeQuery()) {
-                return rs.next(); // Se houver algum resultado, significa que o estoque já existe
+                while (rs.next()) {
+                    Pecas peca = new Pecas(
+                            rs.getInt("id"),
+                            rs.getString("codigo"),
+                            rs.getString("nome"),
+                            rs.getString("descricao"),
+                            rs.getInt("quantidade")                           
+                    );
+                    estoque.adicionarPeca(peca);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
     }
+
+	public Pecas adicionarPeca(Pecas peca) {
+		return peca;
+		
+	}
 }

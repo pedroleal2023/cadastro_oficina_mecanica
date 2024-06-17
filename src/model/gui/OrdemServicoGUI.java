@@ -1,4 +1,3 @@
-
 package model.gui;
 
 import model.dao.ClienteDAO;
@@ -16,6 +15,8 @@ public class OrdemServicoGUI extends JFrame {
     private JComboBox<Cliente> clienteComboBox;
     private JTextArea descricaoArea;
     private JTextField statusField;
+    private JTextField valorServicoField; // Novo campo para valor de serviço
+    private JTextField valorPecasField; // Novo campo para valor de peças
     private JList<OrdemServico> osList;
     private DefaultListModel<OrdemServico> listModel;
     private OrdemServicoDAO osDAO;
@@ -64,8 +65,25 @@ public class OrdemServicoGUI extends JFrame {
         statusField = new JTextField(20);
         formPanel.add(statusField, gbc);
 
+        // Novos campos para valor de serviço e peças
         gbc.gridx = 0;
         gbc.gridy = 3;
+        formPanel.add(new JLabel("Valor Serviço:"), gbc);
+
+        gbc.gridx = 1;
+        valorServicoField = new JTextField(20);
+        formPanel.add(valorServicoField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        formPanel.add(new JLabel("Valor Peças:"), gbc);
+
+        gbc.gridx = 1;
+        valorPecasField = new JTextField(20);
+        formPanel.add(valorPecasField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 5;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
 
@@ -111,14 +129,26 @@ public class OrdemServicoGUI extends JFrame {
     private void adicionarOrdemDeServico() {
         Cliente cliente = (Cliente) clienteComboBox.getSelectedItem();
         if (cliente != null) {
-            OrdemServico os = new OrdemServico(
-                    cliente.getId(),
-                    descricaoArea.getText(),
-                    statusField.getText()
-            );
-            osDAO.adicionarOrdemServico(os);
-            listModel.addElement(os);
-            limparCampos();
+            String valorServicoText = valorServicoField.getText().trim();
+            String valorPecasText = valorPecasField.getText().trim();
+
+            if (valorServicoText.isEmpty() || valorPecasText.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos.");
+                return;
+            }
+
+            try {
+                Double valorServico = Double.parseDouble(valorServicoText);
+                Double valorPecas = Double.parseDouble(valorPecasText);
+
+                OrdemServico os = new OrdemServico(0, // ID será gerado automaticamente pelo banco de dados
+                        cliente.getId(), descricaoArea.getText(), statusField.getText(), valorServico, valorPecas);
+                osDAO.adicionarOrdemServico(os);
+                listModel.addElement(os);
+                limparCampos();
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Valores de serviço e peças inválidos. Insira valores numéricos válidos.");
+            }
         }
     }
 
@@ -127,12 +157,31 @@ public class OrdemServicoGUI extends JFrame {
         if (os != null) {
             Cliente cliente = (Cliente) clienteComboBox.getSelectedItem();
             if (cliente != null) {
-                os.setClienteId(cliente.getId());
-                os.setDescricao(descricaoArea.getText());
-                os.setStatus(statusField.getText());
-                osDAO.atualizarOrdemServico(os);
-                osList.repaint();
-                limparCampos();
+                String valorServicoText = valorServicoField.getText().trim();
+                String valorPecasText = valorPecasField.getText().trim();
+
+                if (valorServicoText.isEmpty() || valorPecasText.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos.");
+                    return;
+                }
+
+                try {
+                    os.setClienteId(cliente.getId());
+                    os.setDescricao(descricaoArea.getText());
+                    os.setStatus(statusField.getText());
+
+                    Double valorServico = Double.parseDouble(valorServicoText);
+                    Double valorPecas = Double.parseDouble(valorPecasText);
+
+                    os.setValorServico(valorServico);
+                    os.setValorPecas(valorPecas);
+
+                    osDAO.atualizarOrdemServico(os);
+                    osList.repaint();
+                    limparCampos();
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "Valores de serviço e peças inválidos. Insira valores numéricos válidos.");
+                }
             }
         }
     }
@@ -164,6 +213,8 @@ public class OrdemServicoGUI extends JFrame {
         clienteComboBox.setSelectedIndex(-1);
         descricaoArea.setText("");
         statusField.setText("");
+        valorServicoField.setText("");
+        valorPecasField.setText("");
     }
 
     public static void main(String[] args) {
@@ -173,17 +224,3 @@ public class OrdemServicoGUI extends JFrame {
         });
     }
 }
-
-
-	
-
-
-
-
-
-
-
-
-
-
-

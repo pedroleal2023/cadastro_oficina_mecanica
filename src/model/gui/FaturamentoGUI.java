@@ -23,7 +23,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import model.dao.FaturamentoDAO;
 import model.dao.OrdemServicoDAO;
+import model.entities.Faturamento;
 import model.entities.OrdemServico;
 
 public class FaturamentoGUI extends JFrame {
@@ -35,6 +37,7 @@ public class FaturamentoGUI extends JFrame {
 	private JTextField valorPecasField;
 	private JButton registrarButton;
 	private OrdemServicoDAO osDAO;
+	private FaturamentoDAO faturamentoDAO;
 
 	public FaturamentoGUI() {
 		setTitle("Controle de Faturamento");
@@ -81,6 +84,9 @@ public class FaturamentoGUI extends JFrame {
 		getContentPane().add(inputPanel, BorderLayout.CENTER);
 
 		osDAO = new OrdemServicoDAO();
+		faturamentoDAO = new FaturamentoDAO();
+
+		// Listar ordens de serviço concluídas ao iniciar a GUI
 		listarOrdensDeServicoConcluidas();
 	}
 
@@ -101,25 +107,33 @@ public class FaturamentoGUI extends JFrame {
 	}
 
 	private void registrarFaturamento() {
-		OrdemServico os = osList.getSelectedValue();
-		if (os != null) {
-			try {
-				double valorServico = Double.parseDouble(valorServicoField.getText());
-				double valorPecas = Double.parseDouble(valorPecasField.getText());
+	    OrdemServico os = osList.getSelectedValue();
+	    if (os != null) {
+	        try {
+	            double valorServico = Double.parseDouble(valorServicoField.getText());
+	            double valorPecas = Double.parseDouble(valorPecasField.getText());
 
-				os.setValorServico(valorServico);
-				os.setValorPecas(valorPecas);
+	            // Registrar o faturamento na tabela faturamento
+	            Faturamento faturamento = new Faturamento(os.getId(), os.getClienteId(), valorServico, valorPecas);
+	            faturamentoDAO.adicionarFaturamento(faturamento);
 
-				// Aqui você precisará de uma lógica para registrar o faturamento da ordem de
-				// serviço
-				// registrarFaturamento(os);
+	            // Atualizar os valores na tabela ordem_servico
+	            os.setValorServico(valorServico);
+	            os.setValorPecas(valorPecas);
+	            osDAO.atualizarOrdemServico(os);
 
-				JOptionPane.showMessageDialog(this, "Faturamento registrado com sucesso!");
-			} catch (NumberFormatException e) {
-				JOptionPane.showMessageDialog(this, "Valores inválidos. Por favor, insira valores numéricos.");
-			}
-		}
+	            // Atualizar a lista de ordens de serviço após registrar faturamento
+	            listarOrdensDeServicoConcluidas();
+
+	            JOptionPane.showMessageDialog(this, "Faturamento registrado com sucesso!");
+	        } catch (NumberFormatException e) {
+	            JOptionPane.showMessageDialog(this, "Valores inválidos. Por favor, insira valores numéricos.");
+	        }
+	    } else {
+	        JOptionPane.showMessageDialog(this, "Selecione uma Ordem de Serviço para registrar o faturamento.");
+	    }
 	}
+
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {

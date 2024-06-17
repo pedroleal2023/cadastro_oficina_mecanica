@@ -6,8 +6,18 @@ public class Pecas {
     private String nome;
     private String descricao;
     private int quantidade;
+    private int estoqueId; // ID do estoque associado, se necessário
+    private String nomeEstoque; // Nome do estoque associado, se necessário
 
-    // Mantendo o construtor existente
+    // Construtor padrão sem ID
+    public Pecas(String codigo, String nome, String descricao, int quantidade) {
+        this.codigo = codigo;
+        this.nome = nome;
+        this.descricao = descricao;
+        this.quantidade = quantidade;
+    }
+
+    // Construtor completo com ID
     public Pecas(int id, String codigo, String nome, String descricao, int quantidade) {
         this.id = id;
         this.codigo = codigo;
@@ -16,7 +26,7 @@ public class Pecas {
         this.quantidade = quantidade;
     }
 
-    // Mantendo os métodos getters e setters
+    // Getters e Setters
     public int getId() {
         return id;
     }
@@ -57,9 +67,24 @@ public class Pecas {
         this.quantidade = quantidade;
     }
 
+    public int getEstoqueId() {
+        return estoqueId;
+    }
+
+    public void setEstoqueId(int estoqueId) {
+        this.estoqueId = estoqueId;
+    }
+
+    public String getNomeEstoque() {
+        return nomeEstoque;
+    }
+
+    public void setNomeEstoque(String nomeEstoque) {
+        this.nomeEstoque = nomeEstoque;
+    }
+
     @Override
     public String toString() {
         return nome;
     }
 }
-

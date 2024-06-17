@@ -1,21 +1,17 @@
 package model.entities;
 
-
 public class OrdemServico {
     private int id;
     private int clienteId;
     private String descricao;
     private String status;
-    private double valorServico;
-    private double valorPecas;
+    private Double valorServico; // Alteração: mudança de double para Double
+    private Double valorPecas;   // Alteração: mudança de double para Double
 
-    public OrdemServico(int clienteId, String descricao, String status) {
-        this.clienteId = clienteId;
-        this.descricao = descricao;
-        this.status = status;
+    public OrdemServico() {
     }
 
-    public OrdemServico(int id, int clienteId, String descricao, String status, double valorServico, double valorPecas) {
+    public OrdemServico(int id, int clienteId, String descricao, String status, Double valorServico, Double valorPecas) {
         this.id = id;
         this.clienteId = clienteId;
         this.descricao = descricao;
@@ -56,28 +52,24 @@ public class OrdemServico {
         this.status = status;
     }
 
-    public double getValorServico() {
+    public Double getValorServico() {
         return valorServico;
     }
 
-    public void setValorServico(double valorServico) {
+    public void setValorServico(Double valorServico) {
         this.valorServico = valorServico;
     }
 
-    public double getValorPecas() {
+    public Double getValorPecas() {
         return valorPecas;
     }
 
-    public void setValorPecas(double valorPecas) {
+    public void setValorPecas(Double valorPecas) {
         this.valorPecas = valorPecas;
     }
-    
-    
 
     @Override
     public String toString() {
         return "OS #" + id + " - " + descricao;
     }
 }
-
-
