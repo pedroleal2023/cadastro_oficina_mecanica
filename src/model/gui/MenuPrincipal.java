@@ -43,7 +43,7 @@ public class MenuPrincipal extends JFrame {
 		panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
 		// Título da Oficina Mecânica
-		JLabel titleLabel = new JLabel("Oficina Mecânica", SwingConstants.CENTER);
+		JLabel titleLabel = new JLabel("Oficina Mecânica - Menu Principal", SwingConstants.CENTER);
 		titleLabel.setForeground(Color.WHITE);
 		titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
 		panel.add(titleLabel);
